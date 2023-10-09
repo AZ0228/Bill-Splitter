@@ -3,16 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    console.log(isMobile)
     if(isMobile){
         inputElement.addEventListener('input', (e) => {
-            let newValue = e.target.value.replace('$', '');
+            let newValue = e.target.value.replace(/[^0-9]/g, ''); // Strip all non-numeric characters
         
-            // Check if the new value is a valid number
-            if (!isNaN(parseFloat(newValue)) && isFinite(newValue)) {
-                let formattedValue = parseFloat(newValue).toFixed(2);
-                e.target.value = `$${formattedValue}`;
+            if (newValue) {
+                // Treat the number as cents
+                let dollarValue = parseInt(newValue, 10) / 100;
+                e.target.value = `$${dollarValue.toFixed(2)}`;
             } else {
-                // If not a valid number, reset to default
+                // If no valid input is left, reset to default
                 e.target.value = "$0.00";
             }
         });
