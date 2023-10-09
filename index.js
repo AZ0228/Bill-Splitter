@@ -5,19 +5,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(isMobile)
     if(isMobile){
+        let previousValue = "000";
+
         inputElement.addEventListener('input', (e) => {
-            let newValue = e.target.value.replace(/[^0-9]/g, ''); // Strip all non-numeric characters
-        
-            if (newValue) {
-                // Treat the number as cents
-                let dollarValue = parseInt(newValue, 10) / 100;
-                e.target.value = `$${dollarValue.toFixed(2)}`;
-            } else {
-                // If no valid input is left, reset to default
-                e.target.value = "$0.00";
+            let newValue = e.target.value.replace(/[^0-9]/g, '');  // Strip all non-numeric characters
+            
+            // Handle addition of numbers
+            if (newValue.length > previousValue.length) {
+                newValue = previousValue + newValue.slice(-1); // Append the last typed digit to the end
+            } 
+            // Handle deletion of numbers (backspace or delete)
+            else if (newValue.length < previousValue.length) {
+                newValue = previousValue.slice(0, -1); // Remove the last character
             }
-        });
-    } else {
+        
+            // Adjust the length of newValue to at least 3 characters by padding zeros
+            while (newValue.length < 3) {
+                newValue = "0" + newValue;
+            }
+            
+            let dollarValue = parseInt(newValue, 10) / 100;
+            e.target.value = `$${dollarValue.toFixed(2)}`;
+            previousValue = newValue;
+        });    } else {
         inputElement.addEventListener('keydown', (e) => {
             console.log(1);
             // Ensure pressed key is a number or backspace
