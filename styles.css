@@ -14,9 +14,36 @@
     font-weight: normal;
 }
 
+@font-face {
+    font-family: 'Satoshi1';
+    src: url('Satoshi-Bold.woff') format('truetype');
+    font-weight: normal;
+}
+
+p{
+    margin:0;
+    font-size:16px;
+    font-family:'Satoshi1';
+}
+
 h1{
     font-weight:600;
     font-size:32px;
+}
+
+h3{
+    margin:0;
+    font-size:20px;
+}
+
+h4{
+    margin:0;
+    font-size:16px;
+}
+
+hr{
+    background-color: var(--inactive);
+    width: 100%;
 }
 
 body{
@@ -107,4 +134,82 @@ label{
 .selected{
     color: var(--dark);
     border: 3px solid var(--dark);
+}
+
+.person{
+    background-color: var(--main);
+    width:90%;
+    /* height:300px; */
+    border-radius: 15px;
+    padding:20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.item-container{
+    display:flex;
+    width:100%;
+    margin: 15px 15px 0 15px;
+    width:100%;
+}
+
+.items{
+    display:flex;
+    background-color: var(--inactive);
+    height: 60px;
+    border-radius: 10px;
+    padding:10px;
+    flex-direction: column;
+    overflow: scroll;
+    gap: 8px;
+    width: 30%;
+    align-items: center;
+}
+
+.items::-webkit-scrollbar {
+    width: 5px;
+    height:100%;
+}
+
+.items::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.total{
+    display:flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    width: 65%;
+    height: 70px;
+    background-color: var(--main);
+    border-radius: 10px;
+    padding: 0 10px;
+}
+
+.top{
+    display:flex;
+    justify-content: space-between;
+    width:100%;
+}
+
+.accent{
+    color:var(--dark);
+}
+
+.total p{
+    text-align: right;
+}
+
+.total h4{
+    text-align: right;
+}
+
+.total-item{
+    display:flex;
+    justify-content: space-between;
+    width: 100%;
 }
