@@ -56,15 +56,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let tips = qsa('.tip-percent');
+    let customTip = id('customTip');
     console.log(tips);
     tips.forEach(tip => {
         tip.addEventListener('click', (e) => {
             console.log(e.target)
             if(e.target.classList.contains('selected')){
                 e.target.classList.remove('selected');
+                customTip.readOnly = false;
                 return;
             }
+            tips.forEach(tip => {
+                tip.classList.remove('selected');
+            });
             e.target.classList.add('selected');
+            customTip.value = '';
+            customTip.readOnly = true;
         });
     });
 });
@@ -77,4 +84,8 @@ function qsa(selector) {
 
 function qs(selector) {
     return document.querySelector(selector);
+}
+
+function id(element){
+    return document.getElementById(element);
 }
