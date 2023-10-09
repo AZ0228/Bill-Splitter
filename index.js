@@ -25,5 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         e.preventDefault(); // Prevent any default behavior
     });
-
+    let tips = qsa('.tip-percent');
+    console.log(tips);
+    tips.forEach(tip => {
+        tip.addEventListener('click', (e) => {
+            console.log(e.target)
+            if(e.target.classList.contains('selected')){
+                e.target.classList.remove('selected');
+                return;
+            }
+            e.target.classList.add('selected');
+        });
+    });
 });
+
+
+
+function qsa(selector) {
+    return document.querySelectorAll(selector);
+}
+
+function qs(selector) {
+    return document.querySelector(selector);
+}
