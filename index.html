@@ -4,8 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Splitter</title>
+    <link rel="stylesheet" href="styles.css"> 
 </head>
 <body>
-    
+    <section>
+        <h1>Split the Bill</h1>
+        <div class="form">
+            <label for="bill">Bill Total</label>
+            <input type="text" name="bill" value="$0.00" id="amount">
+            <label for="tip">Tip Percentage</label>
+            <div class="tip">
+                <div class="tip-percent">15</div>
+                <div class="tip-percent">20</div>
+                <div class="tip-percent">25</div>
+            </div>
+            <input type="number" name="tip" id="tip" placeholder="custom tip amount">
+            <label for="split">Split</label>
+            <input type="text" name="split" id="split" placeholder="Split">
+            <button>Calculate</button>
+        </div>
+    </section>
+    <script src="index.js"></script>
 </body>
 </html>
