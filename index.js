@@ -85,10 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function addItem(){
     let input = qs(".add-prices").querySelector('input');
     let price = input.value;
-    if(parseInt(price) === 0){
+    if(parseFloat(price) === 0){
         return;
     }
-    price = parseInt(price).toFixed(2).toString();
+    price = parseFloat(price).toFixed(2).toString();
     price = "$" + price;
     let items = qs(".new-person").querySelector('.items');
     let itemElement = document.createElement('p');
@@ -116,7 +116,13 @@ function createNewPerson(person){
     let personElement = document.createElement('div');
     let total = parseFloat(id('amount').value.replace('$', ''));
     let totalTax = parseFloat(id('tax').value.replace('$', ''));
-    let totalTip = parseFloat(id('tip').value.replace('$', ''));
+    let totalTip = id('customTip');
+    if(totalTip.readOnly){
+        totalTip = parseFloat(document.querySelector('.selected').innerHTML.replace('%', '')) / 100;
+        totalTip = (totalTip * total);
+    } else {
+        totalTip = parseFloat(totalTip.value);
+    }
 
     let subtotal = 0;
     let tax = 0;
@@ -125,13 +131,16 @@ function createNewPerson(person){
     for(item of person.items.children){
         subtotal += parseFloat(item.innerHTML.replace('$', ''));
     }
+    subtotal = subtotal;
     let ratio = subtotal / total;
-    tax = (ratio * 0.07).toFixed(2);
+    tax = (ratio * totalTax);
+    tip = (ratio * totalTip);
+    totalOwed = (subtotal + parseFloat(tax) + parseFloat(tip)).toFixed(2);
     personElement.classList.add('person');
     personElement.innerHTML = `
             <div class="top">
                 <h3>${person.name}</h3>
-                <h3 class="accent">$500.00</h3>
+                <h3 class="accent">${totalOwed}</h3>
             </div>
             <div class="item-container">
                 <div class="items">
@@ -139,20 +148,23 @@ function createNewPerson(person){
                 <div class="total">
                         <div class="total-item">
                             <p>Subtotal</p>
-                            <h4 id="grab-subtitle">$0.00</h4>    
+                            <h4 id="grab-subtitle">${subtotal.toFixed(2)}</h4>    
                         </div>
                         <div class="total-item">
                             <p>Tax</p>
-                            <h4 id="grab-tax">$0.00</h4>    
+                            <h4 id="grab-tax">${tax.toFixed(2)}</h4>    
                         </div>
                         <div class="total-item">
                             <p>Tip</p>
-                            <h4 id="grab-tip">$0.00</h4>    
+                            <h4 id="grab-tip">${tip.toFixed(2)}</h4>    
                         </div>
                 </div>  
             </div>
 
     `;
+    personElement.querySelector('.items').innerHTML = person.items.innerHTML;
+    let people = qs('.people');
+    people.appendChild(personElement);
 }
 
 function checkInput(event){
@@ -163,12 +175,21 @@ function checkInput(event){
     }
     let inputs = parent.querySelectorAll('input');
     inputs.forEach(input => {
+        if(input.id === "amount"){
+            if(input.value === "$0.00"){
+                empty = true;
+            }
+        }
         if(input.name === "prices"){
             let itemsElement = parent.querySelector('.items');
             if(itemsElement.children.length === 0){
                 empty = true;
             }
-        } else{
+        } else if(input.name === "tip"){
+            if(input.value === "" && !input.readOnly){
+                empty = true;
+            }
+        } else {
             if(input.value === ""){
                 empty = true;
             }
