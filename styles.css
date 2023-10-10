@@ -31,6 +31,11 @@ h1{
     font-size:32px;
 }
 
+h2{
+    margin:0;
+    margin-top: 20px;
+}
+
 h3{
     margin:0;
     font-size:20px;
@@ -66,8 +71,8 @@ section{
     padding:20px;
     border-radius: 20px;
     max-width: 500px;
-    width: 80%;
-    margin: 20px;
+    width: 90%;
+    margin: 10px;
     background-color: var(--bg);
 }
 
@@ -95,10 +100,12 @@ button{
     border:none;
     padding: 10px;
     width:50%;
+    pointer-events: none;
 }
 
 .active{
     background-color:black;
+    pointer-events: all;
 }
 
 #amount{
@@ -212,4 +219,74 @@ label{
     display:flex;
     justify-content: space-between;
     width: 100%;
+}
+
+.new-person{
+    position:absolute;
+    top: 0;
+    /* right: 0; */
+    z-index: 3;
+    width: 80%;
+    gap: 10px;
+    transform:translateY(-100%);
+    transition: all 0.5s;
+}
+
+.new-person.active{
+    transform:translateY(0);
+    background-color: var(--bg);
+}
+
+.close{
+    position:absolute;
+    top: 15px;
+    right: 15px;
+    height:40px;
+    width:40px;
+}
+
+.blur{
+    filter: blur(5px);
+    background-color: var(--inactive);
+    right:0;
+    left:0;
+    top:0;
+    bottom:0;
+    position:fixed;
+    opacity:0;
+    z-index: -99;
+}
+
+.blur.active{
+    opacity:0.6;
+    z-index: 1;
+}
+
+.add-prices{
+    display:flex;
+    justify-content: center;
+    width: 70%;
+}
+
+#add,
+#minus{
+    background-color: black;
+    padding:5px;
+    height:35px;
+    width:35px;
+    border-radius: 5px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    pointer-events: all;
+}
+
+#add:active,
+#minus:active{
+    background-color: var(--inactive);
+}
+
+.new-person .items{
+    width:70%;
 }

@@ -21,74 +21,56 @@
             <input type="number" name="tip" id="customTip" placeholder="custom tip amount">
             <label for="split">Tax</label>
             <input type="text" name="tax" id="tax" placeholder="tax amount">
-            <button>Add Person</button>
+            <button onclick="blurToggle()" class="validation">Add Person</button>
         </div>
     </section>
     <section>
         <div class="person">
             <div class="top">
-                <h3>James</h3>
+                <h3></h3>
                 <h3 class="accent">$500.00</h3>
             </div>
             <div class="item-container">
                 <div class="items">
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
                 </div>
                 <div class="total">
                         <div class="total-item">
                             <p>Subtotal</p>
-                            <h4>$500.00</h4>    
+                            <h4 id="grab-subtitle">$0.00</h4>    
                         </div>
                         <div class="total-item">
                             <p>Tax</p>
-                            <h4>$30.00</h4>    
+                            <h4 id="grab-tax">$0.00</h4>    
                         </div>
                         <div class="total-item">
                             <p>Tip</p>
-                            <h4>$10.00</h4>    
+                            <h4 id="grab-tip">$0.00</h4>    
                         </div>
                 </div>  
             </div>
         </div>
-        <div class="person">
-            <div class="top">
-                <h3>James</h3>
-                <h3 class="accent">$500.00</h3>
-            </div>
-            <div class="item-container">
-                <div class="items">
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                    <p>$10.00</p>
-                </div>
-                <div class="total">
-                        <div class="total-item">
-                            <p>Subtotal</p>
-                            <h4>$500.00</h4>    
-                        </div>
-                        <div class="total-item">
-                            <p>Tax</p>
-                            <h4>$30.00</h4>    
-                        </div>
-                        <div class="total-item">
-                            <p>Tip</p>
-                            <h4>$10.00</h4>    
-                        </div>
-                </div>  
-            </div>
+    </section>
+    <section class="new-person">
+        <img src="close.svg" alt="" class="close" onclick="blurToggle()">
+        <h2>Add New Person</h2>
+        <label for="name">Name</label>
+        <input id="new-name" type="text" name="name" placeholder="name">
+        <label for="prices">Add Item Prices</label>
+        <div class="add-prices">
+            <input type="number" name="prices" placeholder="0.00">
+            <button id="add" onclick="addItem()">
+                <img src="plus.svg" alt="">
+            </button>
+            <button id="minus" onclick="minusItem()">
+                <img src="minus.svg" alt="">
+            </button>
         </div>
+        <div class="items">
+        </div>
+        <button onclick="parsePerson()" class="validation">Add</button>
 
     </section>
+    <div class="blur"></div>
     <script src="index.js"></script>
 </body>
 </html>
