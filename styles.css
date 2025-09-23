@@ -237,6 +237,11 @@ section{
     transition: border-color 0.3s ease;
     width: 100%;
     font-family: 'Merchant Copy';
+    
+}
+.input-group input::placeholder {
+    color: var(--text-light);
+    font-family: 'Merchant Copy';
 }
 
 .input-group input:focus {
