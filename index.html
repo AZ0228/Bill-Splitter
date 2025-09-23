@@ -10,137 +10,143 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <h1>Smart Bill Splitter</h1>
-            <p class="subtitle">Split bills fairly with item sharing and custom calculations</p>
+            <h1>split the bill</h1>
+            <p class="subtitle">nobody asked for this</p>
             <div class="header-actions">
                 <button class="btn btn-small btn-secondary" id="history-btn" title="View History">📋 History</button>
                 <button class="btn btn-small btn-secondary" id="shortcuts-btn" title="Keyboard Shortcuts">⌨️ Shortcuts</button>
             </div>
         </header>
 
-        <!-- Bill Setup Section -->
-        <section class="bill-setup">
-            <h2>📋 Bill Information</h2>
-            <div class="section-info">
-                <p>Set up your bill details. You can either enter the subtotal manually or add individual items below and use "Auto" to calculate it.</p>
-            </div>
-            <div class="setup-form">
-                <div class="input-group">
-                    <label for="bill-total">Bill Subtotal (Items Only)</label>
-                    <div class="input-with-button">
-                        <input type="number" id="bill-total" placeholder="0.00" step="0.01" min="0" class="large-input">
-                        
-                        <button type="button" class="btn btn-small btn-secondary" id="auto-calculate-subtotal" title="Calculate from items">Auto</button>
-                    </div>
-                    <small class="input-help">Enter the total of all items before tax and tip, or use "Auto" to calculate from items below</small>
+        <!-- Receipt Container -->
+        <div class="receipt-container">
+
+            <!-- Bill Setup Section -->
+            <div class="receipt-section bill-setup">
+                <div class="section-header">
+                    <h2>BILL INFORMATION</h2>
                 </div>
-                
-                <div class="input-group">
-                    <label for="tax-amount">Tax Amount</label>
-                    <input type="number" id="tax-amount" placeholder="0.00" step="0.01" min="0">
-                    
-                </div>
-                
-                <div class="tip-section">
-                    <label>Tip</label>
-                    <div class="tip-options">
-                        <button class="tip-btn" data-tip="15">15%</button>
-                        <button class="tip-btn" data-tip="18">18%</button>
-                        <button class="tip-btn" data-tip="20">20%</button>
-                        <button class="tip-btn" data-tip="25">25%</button>
-                    </div>
+
+                <div class="setup-form"> 
                     <div class="input-group">
-                        <input type="number" id="custom-tip" placeholder="Custom tip amount" step="0.01" min="0">
+                        <label for="bill-total">Bill Subtotal <b>Items Only</b></label>
+                        <div class="input-with-button">
+                            <input type="number" id="bill-total" placeholder="0.00" step="0.01" min="0" class="large-input">
+                            
+                            <button type="button" class="btn btn-small btn-secondary" id="auto-calculate-subtotal" title="Calculate from items">Auto</button>
+                        </div>
+                        <small class="input-help">Enter the total of all items before tax and tip, or use "Auto" to calculate from items below</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="tax-amount">Tax Amount</label>
+                        <input type="number" id="tax-amount" placeholder="0.00" step="0.01" min="0">
+                        
+                    </div>
+                    
+                    <div class="tip-section">
+                        <label>Tip</label>
+                        <div class="tip-options">
+                            <button class="tip-btn" data-tip="15">15%</button>
+                            <button class="tip-btn" data-tip="18">18%</button>
+                            <button class="tip-btn" data-tip="20">20%</button>
+                            <button class="tip-btn" data-tip="25">25%</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="number" id="custom-tip" placeholder="Custom tip amount" step="0.01" min="0">
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="service-fee">Service Fee (Optional)</label>
+                        <input type="number" id="service-fee" placeholder="0.00" step="0.01" min="0">
                         
                     </div>
                 </div>
                 
-                <div class="input-group">
-                    <label for="service-fee">Service Fee (Optional)</label>
-                    <input type="number" id="service-fee" placeholder="0.00" step="0.01" min="0">
-                    
+                <!-- Bill Summary -->
+                <div class="bill-summary" id="bill-summary" style="display: none;">
+                    <h3>Bill Summary</h3>
+                    <div class="summary-line">
+                        <span>Subtotal (Items):</span>
+                        <span id="summary-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Tax:</span>
+                        <span id="summary-tax">$0.00</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Tip:</span>
+                        <span id="summary-tip">$0.00</span>
+                    </div>
+                    <div class="summary-line" id="summary-service-fee-line" style="display: none;">
+                        <span>Service Fee:</span>
+                        <span id="summary-service-fee">$0.00</span>
+                    </div>
+                    <hr>
+                    <div class="summary-line total-line">
+                        <span><strong>Grand Total:</strong></span>
+                        <span id="summary-grand-total"><strong>$0.00</strong></span>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Bill Summary -->
-            <div class="bill-summary" id="bill-summary" style="display: none;">
-                <h3>Bill Summary</h3>
-                <div class="summary-line">
-                    <span>Subtotal (Items):</span>
-                    <span id="summary-subtotal">$0.00</span>
-                </div>
-                <div class="summary-line">
-                    <span>Tax:</span>
-                    <span id="summary-tax">$0.00</span>
-                </div>
-                <div class="summary-line">
-                    <span>Tip:</span>
-                    <span id="summary-tip">$0.00</span>
-                </div>
-                <div class="summary-line" id="summary-service-fee-line" style="display: none;">
-                    <span>Service Fee:</span>
-                    <span id="summary-service-fee">$0.00</span>
-                </div>
-                <hr>
-                <div class="summary-line total-line">
-                    <span><strong>Grand Total:</strong></span>
-                    <span id="summary-grand-total"><strong>$0.00</strong></span>
-                </div>
-            </div>
-        </section>
 
-        <!-- People Management Section -->
-        <section class="people-section">
-            <div class="section-header">
-                <h2>👥 People</h2>
-                <button class="btn btn-primary" id="add-person-btn">+ Add Person</button>
-            </div>
-            <div class="section-info">
-                <p>Add people first, then you can assign items to them when creating each item.</p>
-            </div>
-            <div class="people-list" id="people-list">
-                <div class="empty-state">
-                    <p>No people added yet. Click "Add Person" to get started!</p>
+            <!-- People Management Section -->
+            <div class="receipt-section people-section">
+                <div class="section-header">
+                    <h2>PEOPLE</h2>
+                    <button class="btn btn-primary" id="add-person-btn">+ Add Person</button>
+                </div>
+                <mvt:comment> <div class="section-info">
+                    <p>Add people first, then you can assign items to them when creating each item.</p>
+                </div> </mvt:comment>
+                <div class="people-list" id="people-list">
+                    <div class="empty-state">
+                        <p>No people added yet. Click "Add Person" to get started!</p>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Items Management Section -->
-        <section class="items-section">
-            <div class="section-header">
-                <h2>🍽️ Items</h2>
-                <button class="btn btn-primary" id="add-item-btn" disabled>+ Add Item</button>
-            </div>
-            <div class="section-info">
-                <p>Add items and assign them to people. You can split items evenly or by custom percentages.</p>
-            </div>
-            <div class="items-list" id="items-list">
-                <div class="empty-state">
-                    <p>Add people first, then you can add items and assign them!</p>
+            <!-- Items Management Section -->
+            <div class="receipt-section items-section">
+                <div class="section-header">
+                    <h2>ITEMS</h2>
+                    <button class="btn btn-primary" id="add-item-btn" disabled>+ Add Item</button>
+                </div>
+                <div class="section-info">
+                    <p>Add items and assign them to people. You can split items evenly or by custom percentages.</p>
+                </div>
+                <div class="items-list" id="items-list">
+                    <div class="empty-state">
+                        <p>Add people first, then you can add items and assign them!</p>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Results Section -->
-        <section class="results-section" id="results-section" style="display: none;">
-            <h2>💰 Split Summary</h2>
-            <div class="summary-cards">
-                <div class="summary-card">
-                    <h3>Total Bill</h3>
-                    <span class="amount" id="total-bill">$0.00</span>
+            <!-- Results Section -->
+            <div class="receipt-section results-section" id="results-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Split Summary</h2>
                 </div>
-                <div class="summary-card">
-                    <h3>Per Person</h3>
-                    <span class="amount" id="per-person">$0.00</span>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Bill</h3>
+                        <span class="amount" id="total-bill">$0.00</span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Per Person</h3>
+                        <span class="amount" id="per-person">$0.00</span>
+                    </div>
+                </div>
+                <div class="detailed-results" id="detailed-results"></div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="reset-btn">Reset All</button>
+                    <button class="btn btn-success" id="mark-complete-btn">Mark as Complete</button>
+                    <button class="btn btn-primary" id="export-btn">Export Results</button>
                 </div>
             </div>
-            <div class="detailed-results" id="detailed-results"></div>
-            <div class="action-buttons">
-                <button class="btn btn-secondary" id="reset-btn">Reset All</button>
-                <button class="btn btn-success" id="mark-complete-btn">Mark as Complete</button>
-                <button class="btn btn-primary" id="export-btn">Export Results</button>
-            </div>
-        </section>
+        </div>
     </div>
 
     <!-- Item Modal -->
@@ -153,7 +159,7 @@
             <div class="modal-body">
                 <div class="input-group">
                     <label for="item-name">Item Name</label>
-                    <input type="text" id="item-name" placeholder="e.g., Pizza Margherita">
+                    <input type="text" id="item-name" placeholder="e.g., Amante's Steak and Cheese Sub">
                 </div>
                 <div class="input-group">
                     <label for="item-price">Price</label>
