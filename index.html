@@ -3,50 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Splitter</title>
+    <title>Smart Bill Splitter</title>
     <link rel="stylesheet" href="styles.css"> 
 </head>
 <body>
-    <section>
-        <h1>Split the Bill</h1>
-        <div class="form">
-            <label for="bill">Bill Total</label>
-            <input type="text" name="bill" value="$0.00" id="amount">
-            <label for="tip">Tip Percentage</label>
-            <div class="tip">
-                <div class="tip-percent">15%</div>
-                <div class="tip-percent">20%</div>
-                <div class="tip-percent">25%</div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Smart Bill Splitter</h1>
+            <p class="subtitle">Split bills fairly with item sharing and custom calculations</p>
+            <div class="header-actions">
+                <button class="btn btn-small btn-secondary" id="history-btn" title="View History">📋 History</button>
+                <button class="btn btn-small btn-secondary" id="shortcuts-btn" title="Keyboard Shortcuts">⌨️ Shortcuts</button>
             </div>
-            <input type="number" name="tip" id="customTip" placeholder="custom tip amount">
-            <label for="split">Tax</label>
-            <input type="text" name="tax" id="tax" placeholder="tax amount">
-            <button onclick="blurToggle()" class="validation">Add Person</button>
-        </div>
-    </section>
-    <section class="people">
-    </section>
-    <section class="new-person">
-        <img src="close.svg" alt="" class="close" onclick="blurToggle()">
-        <h2>Add New Person</h2>
-        <label for="name">Name</label>
-        <input id="new-name" type="text" name="name" placeholder="name">
-        <label for="prices">Add Item Prices</label>
-        <div class="add-prices">
-            <input type="number" name="prices" placeholder="0.00">
-            <button id="add" onclick="addItem()">
-                <img src="plus.svg" alt="">
-            </button>
-            <button id="minus" onclick="minusItem()">
-                <img src="minus.svg" alt="">
-            </button>
-        </div>
-        <div class="items">
-        </div>
-        <button onclick="parsePerson()" class="validation">Add</button>
+        </header>
 
-    </section>
-    <div class="blur"></div>
+        <!-- Bill Setup Section -->
+        <section class="bill-setup">
+            <h2>📋 Bill Information</h2>
+            <div class="section-info">
+                <p>Set up your bill details. You can either enter the subtotal manually or add individual items below and use "Auto" to calculate it.</p>
+            </div>
+            <div class="setup-form">
+                <div class="input-group">
+                    <label for="bill-total">Bill Subtotal (Items Only)</label>
+                    <div class="input-with-button">
+                        <input type="number" id="bill-total" placeholder="0.00" step="0.01" min="0" class="large-input">
+                        
+                        <button type="button" class="btn btn-small btn-secondary" id="auto-calculate-subtotal" title="Calculate from items">Auto</button>
+                    </div>
+                    <small class="input-help">Enter the total of all items before tax and tip, or use "Auto" to calculate from items below</small>
+                </div>
+                
+                <div class="input-group">
+                    <label for="tax-amount">Tax Amount</label>
+                    <input type="number" id="tax-amount" placeholder="0.00" step="0.01" min="0">
+                    
+                </div>
+                
+                <div class="tip-section">
+                    <label>Tip</label>
+                    <div class="tip-options">
+                        <button class="tip-btn" data-tip="15">15%</button>
+                        <button class="tip-btn" data-tip="18">18%</button>
+                        <button class="tip-btn" data-tip="20">20%</button>
+                        <button class="tip-btn" data-tip="25">25%</button>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="custom-tip" placeholder="Custom tip amount" step="0.01" min="0">
+                        
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="service-fee">Service Fee (Optional)</label>
+                    <input type="number" id="service-fee" placeholder="0.00" step="0.01" min="0">
+                    
+                </div>
+            </div>
+            
+            <!-- Bill Summary -->
+            <div class="bill-summary" id="bill-summary" style="display: none;">
+                <h3>Bill Summary</h3>
+                <div class="summary-line">
+                    <span>Subtotal (Items):</span>
+                    <span id="summary-subtotal">$0.00</span>
+                </div>
+                <div class="summary-line">
+                    <span>Tax:</span>
+                    <span id="summary-tax">$0.00</span>
+                </div>
+                <div class="summary-line">
+                    <span>Tip:</span>
+                    <span id="summary-tip">$0.00</span>
+                </div>
+                <div class="summary-line" id="summary-service-fee-line" style="display: none;">
+                    <span>Service Fee:</span>
+                    <span id="summary-service-fee">$0.00</span>
+                </div>
+                <hr>
+                <div class="summary-line total-line">
+                    <span><strong>Grand Total:</strong></span>
+                    <span id="summary-grand-total"><strong>$0.00</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- People Management Section -->
+        <section class="people-section">
+            <div class="section-header">
+                <h2>👥 People</h2>
+                <button class="btn btn-primary" id="add-person-btn">+ Add Person</button>
+            </div>
+            <div class="section-info">
+                <p>Add people first, then you can assign items to them when creating each item.</p>
+            </div>
+            <div class="people-list" id="people-list">
+                <div class="empty-state">
+                    <p>No people added yet. Click "Add Person" to get started!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Items Management Section -->
+        <section class="items-section">
+            <div class="section-header">
+                <h2>🍽️ Items</h2>
+                <button class="btn btn-primary" id="add-item-btn" disabled>+ Add Item</button>
+            </div>
+            <div class="section-info">
+                <p>Add items and assign them to people. You can split items evenly or by custom percentages.</p>
+            </div>
+            <div class="items-list" id="items-list">
+                <div class="empty-state">
+                    <p>Add people first, then you can add items and assign them!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results-section" style="display: none;">
+            <h2>💰 Split Summary</h2>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>Total Bill</h3>
+                    <span class="amount" id="total-bill">$0.00</span>
+                </div>
+                <div class="summary-card">
+                    <h3>Per Person</h3>
+                    <span class="amount" id="per-person">$0.00</span>
+                </div>
+            </div>
+            <div class="detailed-results" id="detailed-results"></div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="reset-btn">Reset All</button>
+                <button class="btn btn-success" id="mark-complete-btn">Mark as Complete</button>
+                <button class="btn btn-primary" id="export-btn">Export Results</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Item Modal -->
+    <div class="modal" id="item-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="item-modal-title">Add Item</h3>
+                <button class="close-btn" id="close-item-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="item-name">Item Name</label>
+                    <input type="text" id="item-name" placeholder="e.g., Pizza Margherita">
+                </div>
+                <div class="input-group">
+                    <label for="item-price">Price</label>
+                    <input type="number" id="item-price" placeholder="0.00" step="0.01" min="0">
+                    
+                </div>
+                <div class="input-group">
+                    <label for="item-quantity">Quantity</label>
+                    <input type="number" id="item-quantity" placeholder="1" min="1" value="1">
+                </div>
+                
+                <div class="item-assignment-section">
+                    <h4>Assign to People</h4>
+                    <div class="split-method-selector">
+                        <label class="split-option">
+                            <input type="radio" name="item-split-method" value="even" checked>
+                            <span class="split-option-content">
+                                <strong>Even Split</strong>
+                                <small>Split this item equally among selected people</small>
+                            </span>
+                        </label>
+                        <label class="split-option">
+                            <input type="radio" name="item-split-method" value="percentage">
+                            <span class="split-option-content">
+                                <strong>Custom Percentages</strong>
+                                <small>Specify what percentage each person pays</small>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="people-assignment" id="people-assignment">
+                        <p class="no-people-message">Add people first to assign items to them.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-item">Cancel</button>
+                <button class="btn btn-primary" id="save-item">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Person Modal -->
+    <div class="modal" id="person-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Person</h3>
+                <button class="close-btn" id="close-person-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="person-name">Name</label>
+                    <input type="text" id="person-name" placeholder="e.g., John">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-person">Cancel</button>
+                <button class="btn btn-primary" id="save-person">Add Person</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal" id="history-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>📋 Bill History</h3>
+                <button class="close-btn" id="close-history-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-section">
+                    <h4>Completed Bills</h4>
+                    <div class="history-list" id="completed-bills">
+                        <div class="empty-state">
+                            <p>No completed bills yet. Mark a bill as complete to save it here!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history-section">
+                    <h4>Draft Bills</h4>
+                    <div class="history-list" id="draft-bills">
+                        <div class="empty-state">
+                            <p>No draft bills saved.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="clear-history">Clear All History</button>
+                <button class="btn btn-primary" id="close-history">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal" id="shortcuts-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⌨️ Keyboard Shortcuts</h3>
+                <button class="close-btn" id="close-shortcuts-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-section">
+                    <h4>Global Shortcuts</h4>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + N</kbd>
+                        <span>Add Person</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + I</kbd>
+                        <span>Add Item</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + A</kbd>
+                        <span>Auto-calculate Subtotal</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + R</kbd>
+                        <span>Reset All</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + E</kbd>
+                        <span>Export Results</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + H</kbd>
+                        <span>View History</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Shift + ?</kbd>
+                        <span>Show Keyboard Shortcuts</span>
+                    </div>
+                </div>
+                
+                <div class="shortcuts-section">
+                    <h4>Modal Navigation</h4>
+                    <div class="shortcut-item">
+                        <kbd>Enter</kbd>
+                        <span>Save/Submit</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Escape</kbd>
+                        <span>Close Modal</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Tab</kbd>
+                        <span>Navigate Forward</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Shift + Tab</kbd>
+                        <span>Navigate Backward</span>
+                    </div>
+                </div>
+                
+                <div class="shortcuts-section">
+                    <h4>Item Management</h4>
+                    <div class="shortcut-item">
+                        <kbd>Space</kbd>
+                        <span>Toggle Checkbox</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Enter</kbd>
+                        <span>Save Item (from percentage input)</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>E</kbd>
+                        <span>Edit Selected Item (when item is focused)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="close-shortcuts">Got it!</button>
+            </div>
+        </div>
+    </div>
+
     <script src="index.js"></script>
 </body>
 </html>
