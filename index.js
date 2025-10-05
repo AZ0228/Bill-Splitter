@@ -127,6 +127,19 @@ class BillSplitter {
         document.getElementById('close-shortcuts').addEventListener('click', () => {
             this.closeModal('shortcuts-modal');
         });
+
+        // History modal dynamic buttons (using event delegation)
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('load-bill-btn')) {
+                const billId = e.target.dataset.billId;
+                this.loadBill(billId);
+            } else if (e.target.classList.contains('delete-bill-btn')) {
+                const billId = e.target.dataset.billId;
+                this.deleteBill(billId);
+            } else if (e.target.classList.contains('clear-draft-btn')) {
+                this.clearDraft();
+            }
+        });
     }
 
     setupModalListeners() {
@@ -1088,8 +1101,8 @@ class BillSplitter {
                         </div>
                     </div>
                     <div class="history-item-actions">
-                        <button class="btn btn-small btn-primary" onclick="billSplitter.loadBill('${bill.id}')">Load</button>
-                        <button class="btn btn-small btn-secondary" onclick="billSplitter.deleteBill('${bill.id}')">Delete</button>
+                        <button class="btn btn-small btn-primary load-bill-btn" data-bill-id="${bill.id}">Load</button>
+                        <button class="btn btn-small btn-secondary delete-bill-btn" data-bill-id="${bill.id}">Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -1110,7 +1123,7 @@ class BillSplitter {
                                 </div>
                             </div>
                             <div class="history-item-actions">
-                                <button class="btn btn-small btn-secondary" onclick="billSplitter.clearDraft()">Clear Draft</button>
+                                <button class="btn btn-small btn-secondary clear-draft-btn">Clear Draft</button>
                             </div>
                         </div>
                     `;
