@@ -6,7 +6,10 @@ class BillSplitter {
             tax: 0,
             tip: 0,
             serviceFee: 0,
-            tipPercentage: null
+            tipPercentage: null,
+            discount: 0,
+            discountType: 'percentage', // 'percentage' or 'dollar'
+            discountIncludeTip: false
         };
         this.items = [];
         this.people = [];
@@ -21,6 +24,7 @@ class BillSplitter {
         this.setupEventListeners();
         this.setupKeyboardNavigation();
         this.loadDraftFromStorage();
+        this.initializeDiscountType();
         this.updateUI();
         this.setupAutoSave();
     }
@@ -39,6 +43,17 @@ class BillSplitter {
 
         document.getElementById('service-fee').addEventListener('input', (e) => {
             this.billData.serviceFee = parseFloat(e.target.value) || 0;
+            this.updateCalculations();
+        });
+
+        // Discount inputs
+        document.getElementById('discount-amount').addEventListener('input', (e) => {
+            this.billData.discount = parseFloat(e.target.value) || 0;
+            this.updateCalculations();
+        });
+
+        document.getElementById('discount-include-tip').addEventListener('change', (e) => {
+            this.billData.discountIncludeTip = e.target.checked;
             this.updateCalculations();
         });
 
@@ -62,6 +77,23 @@ class BillSplitter {
                     e.preventDefault();
                     const percentage = parseFloat(btn.dataset.tip);
                     this.setTipPercentage(percentage);
+                }
+            });
+        });
+
+        // Discount type buttons
+        document.querySelectorAll('.discount-type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.dataset.type;
+                this.setDiscountType(type);
+            });
+            
+            // Add keyboard support for discount type buttons
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const type = btn.dataset.type;
+                    this.setDiscountType(type);
                 }
             });
         });
@@ -363,6 +395,60 @@ class BillSplitter {
         document.querySelectorAll('.tip-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
+    }
+
+    setDiscountType(type) {
+        this.billData.discountType = type;
+        
+        // Update button selection
+        document.querySelectorAll('.discount-type-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+        
+        // Update suffix
+        const suffix = document.getElementById('discount-suffix');
+        suffix.textContent = type === 'percentage' ? '%' : '$';
+        
+        // Update placeholder
+        const input = document.getElementById('discount-amount');
+        input.placeholder = type === 'percentage' ? '0.00' : '0.00';
+        
+        this.updateCalculations();
+    }
+
+    clearDiscountSelection() {
+        document.querySelectorAll('.discount-type-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+    }
+
+    initializeDiscountType() {
+        // Set default discount type to percentage if not already set
+        if (!this.billData.discountType) {
+            this.billData.discountType = 'percentage';
+        }
+        this.setDiscountType(this.billData.discountType);
+    }
+
+    calculateDiscountAmount() {
+        if (this.billData.discount <= 0) return 0;
+        
+        let baseAmount = this.billData.total;
+        
+        // If including tip in discount calculation, add tip to base amount
+        if (this.billData.discountIncludeTip) {
+            baseAmount += this.billData.tip;
+        }
+        
+        if (this.billData.discountType === 'percentage') {
+            // Ensure percentage doesn't exceed 100%
+            const percentage = Math.min(this.billData.discount, 100);
+            return (baseAmount * percentage) / 100;
+        } else {
+            // Dollar amount - ensure it doesn't exceed the base amount
+            return Math.min(this.billData.discount, baseAmount);
+        }
     }
 
     openItemModal(editingItemId = null) {
@@ -765,13 +851,17 @@ class BillSplitter {
             }
         });
 
-        // Add proportional tax, tip, and service fee
+        // Add proportional tax, tip, service fee, and subtract proportional discount
         const itemsTotal = this.getTotalItemsValue();
         if (itemsTotal > 0) {
             const ratio = total / itemsTotal;
             total += (this.billData.tax * ratio);
             total += (this.billData.tip * ratio);
             total += (this.billData.serviceFee * ratio);
+            
+            // Subtract proportional discount
+            const discountAmount = this.calculateDiscountAmount();
+            total -= (discountAmount * ratio);
         }
 
         return total;
@@ -800,7 +890,7 @@ class BillSplitter {
 
     updateBillSummary() {
         const summarySection = document.getElementById('bill-summary');
-        const hasAnyValue = this.billData.total > 0 || this.billData.tax > 0 || this.billData.tip > 0 || this.billData.serviceFee > 0;
+        const hasAnyValue = this.billData.total > 0 || this.billData.tax > 0 || this.billData.tip > 0 || this.billData.serviceFee > 0 || this.billData.discount > 0;
         
         if (hasAnyValue) {
             summarySection.style.display = 'block';
@@ -817,7 +907,16 @@ class BillSplitter {
                 serviceFeeLine.style.display = 'none';
             }
             
-            const grandTotal = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee;
+            const discountAmount = this.calculateDiscountAmount();
+            const discountLine = document.getElementById('summary-discount-line');
+            if (discountAmount > 0) {
+                discountLine.style.display = 'flex';
+                document.getElementById('summary-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+            } else {
+                discountLine.style.display = 'none';
+            }
+            
+            const grandTotal = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee - discountAmount;
             document.getElementById('summary-grand-total').innerHTML = `<strong>$${grandTotal.toFixed(2)}</strong>`;
     } else {
             summarySection.style.display = 'none';
@@ -834,7 +933,8 @@ class BillSplitter {
 
         resultsSection.style.display = 'block';
 
-        const totalBill = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee;
+        const discountAmount = this.calculateDiscountAmount();
+        const totalBill = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee - discountAmount;
         const perPersonAverage = this.people.length > 0 ? totalBill / this.people.length : 0;
 
         document.getElementById('total-bill').textContent = `$${totalBill.toFixed(2)}`;
@@ -870,6 +970,8 @@ class BillSplitter {
             const tax = this.billData.tax * ratio;
             const tip = this.billData.tip * ratio;
             const serviceFee = this.billData.serviceFee * ratio;
+            const discountAmount = this.calculateDiscountAmount();
+            const discount = discountAmount * ratio;
 
             return `
                 <div class="person-result">
@@ -895,6 +997,12 @@ class BillSplitter {
                         <div class="result-item">
                             <span class="result-item-name">Service Fee</span>
                             <span class="result-item-amount">$${serviceFee.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        ${discountAmount > 0 ? `
+                        <div class="result-item">
+                            <span class="result-item-name">Discount</span>
+                            <span class="result-item-amount">-$${discount.toFixed(2)}</span>
                         </div>
                         ` : ''}
                 </div>  
@@ -923,13 +1031,15 @@ class BillSplitter {
             return;
         }
 
+        const discountAmount = this.calculateDiscountAmount();
         const results = {
             billSummary: {
                 total: this.billData.total,
                 tax: this.billData.tax,
                 tip: this.billData.tip,
                 serviceFee: this.billData.serviceFee,
-                grandTotal: this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee
+                discount: discountAmount,
+                grandTotal: this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee - discountAmount
             },
             people: this.people.map(person => ({
                 name: person.name,
@@ -972,6 +1082,7 @@ class BillSplitter {
                this.billData.tax > 0 || 
                this.billData.tip > 0 || 
                this.billData.serviceFee > 0 ||
+               this.billData.discount > 0 ||
                this.items.length > 0 || 
                this.people.length > 0;
     }
@@ -1015,11 +1126,18 @@ class BillSplitter {
         document.getElementById('tax-amount').value = this.billData.tax || '';
         document.getElementById('service-fee').value = this.billData.serviceFee || '';
         document.getElementById('custom-tip').value = this.billData.tipPercentage ? '' : (this.billData.tip || '');
+        document.getElementById('discount-amount').value = this.billData.discount || '';
+        document.getElementById('discount-include-tip').checked = this.billData.discountIncludeTip || false;
         
         // Restore tip selection
         if (this.billData.tipPercentage) {
             this.clearTipSelection();
             document.querySelector(`[data-tip="${this.billData.tipPercentage}"]`).classList.add('selected');
+        }
+        
+        // Restore discount type selection
+        if (this.billData.discountType) {
+            this.setDiscountType(this.billData.discountType);
         }
     }
 
@@ -1051,7 +1169,8 @@ class BillSplitter {
     }
 
     generateBillTitle() {
-        const total = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee;
+        const discountAmount = this.calculateDiscountAmount();
+        const total = this.billData.total + this.billData.tax + this.billData.tip + this.billData.serviceFee - discountAmount;
         const date = new Date().toLocaleDateString();
         return `Bill - $${total.toFixed(2)} (${this.people.length} people) - ${date}`;
     }
@@ -1198,7 +1317,10 @@ class BillSplitter {
             tax: 0,
             tip: 0,
             serviceFee: 0,
-            tipPercentage: null
+            tipPercentage: null,
+            discount: 0,
+            discountType: 'percentage',
+            discountIncludeTip: false
         };
         this.items = [];
         this.people = [];
@@ -1211,7 +1333,10 @@ class BillSplitter {
         document.getElementById('tax-amount').value = '';
         document.getElementById('service-fee').value = '';
         document.getElementById('custom-tip').value = '';
+        document.getElementById('discount-amount').value = '';
+        document.getElementById('discount-include-tip').checked = false;
         this.clearTipSelection();
+        this.clearDiscountSelection();
         
         // Clear draft from storage
         localStorage.removeItem('billSplitter_draft');

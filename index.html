@@ -63,6 +63,25 @@
                         <input type="number" id="service-fee" placeholder="0.00" step="0.01" min="0">
                         
                     </div>
+                    
+                    <div class="discount-section">
+                        <label>Discount</label>
+                        <div class="discount-options">
+                            <button class="discount-type-btn" data-type="percentage">Percentage</button>
+                            <button class="discount-type-btn" data-type="dollar">Dollar Amount</button>
+                        </div>
+                        <div class="input-group">
+                            <input type="number" id="discount-amount" placeholder="0.00" step="0.01" min="0">
+                            <span class="discount-suffix" id="discount-suffix">%</span>
+                        </div>
+                        <div class="discount-tip-option">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="discount-include-tip">
+                                <span class="checkmark"></span>
+                                Include tip in discount calculation
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Bill Summary -->
@@ -83,6 +102,10 @@
                     <div class="summary-line" id="summary-service-fee-line" style="display: none;">
                         <span>Service Fee:</span>
                         <span id="summary-service-fee">$0.00</span>
+                    </div>
+                    <div class="summary-line" id="summary-discount-line" style="display: none;">
+                        <span>Discount:</span>
+                        <span id="summary-discount">-$0.00</span>
                     </div>
                     <hr>
                     <div class="summary-line total-line">

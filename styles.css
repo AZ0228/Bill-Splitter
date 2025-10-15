@@ -341,6 +341,84 @@ section{
     border-color: var(--dark);
 }
 
+/* Discount Section */
+.discount-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.discount-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.discount-type-btn {
+    padding: 10px 30px;
+    border: 2px solid var(--border);
+    background-color: rgba(0,0,0, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 30px;
+    font-weight: 500;
+    font-family: 'Merchant Copy';
+}
+
+.discount-type-btn:hover {
+    border-color: var(--dark);
+    background-color: var(--main);
+}
+
+.discount-type-btn.selected {
+    background-color: var(--dark);
+    color: white;
+    border-color: var(--dark);
+}
+
+.discount-suffix {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dark);
+    font-weight: 500;
+    pointer-events: none;
+    font-size: 30px;
+    font-family: 'Merchant Copy';
+}
+
+.input-group:has(.discount-suffix) input {
+    padding-right: 40px;
+}
+
+.discount-tip-option {
+    margin-top: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-dark);
+    font-family: 'Merchant Copy';
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
 /* Buttons */
 .btn {
     padding: 12px 24px;
